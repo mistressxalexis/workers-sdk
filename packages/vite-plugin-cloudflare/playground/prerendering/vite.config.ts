@@ -1,5 +1,8 @@
+import * as fsp from "node:fs/promises";
+import * as path from "node:path";
+import { fileURLToPath } from "node:url";
 import { cloudflare } from "@cloudflare/vite-plugin";
-import { defineConfig } from "vite";
+import { defineConfig, preview } from "vite";
 
 export default defineConfig({
 	plugins: [
@@ -15,5 +18,60 @@ export default defineConfig({
 				},
 			},
 		}),
+		{
+			name: "prerender-plugin",
+			enforce: "post",
+			buildApp: {
+				order: "post",
+				async handler(builder) {
+					process.env.IS_VITE_PRERENDER = "true";
+
+					const previewServer = await preview({
+						root: path.dirname(fileURLToPath(import.meta.url)),
+						logLevel: "silent",
+						preview: {
+							port: 0,
+						},
+					});
+
+					const baseUrl = previewServer.resolvedUrls?.local[0];
+					const clientOutputDirectory =
+						builder.environments.client?.config.build.outDir;
+
+					if (baseUrl && clientOutputDirectory) {
+						const response = await fetch(new URL("/prerendered", baseUrl));
+						const html = await response.text();
+
+						await fsp.writeFile(
+							path.resolve(
+								builder.config.root,
+								clientOutputDirectory,
+								"prerendered.html"
+							),
+							html
+						);
+
+						console.log("Pre-rendered /prerendered");
+					}
+
+					await previewServer.close();
+
+					delete process.env.IS_VITE_PRERENDER;
+
+					const prerenderOutputDirectory =
+						builder.environments.prerender?.config.build.outDir;
+
+					if (prerenderOutputDirectory) {
+						await fsp.rm(
+							path.resolve(builder.config.root, prerenderOutputDirectory),
+							{
+								recursive: true,
+								force: true,
+							}
+						);
+					}
+				},
+			},
+		},
 	],
 });

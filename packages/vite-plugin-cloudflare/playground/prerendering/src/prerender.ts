@@ -1,7 +1,10 @@
 export default {
-	async fetch() {
-		return new Response(
-			`
+	async fetch(request) {
+		const url = new URL(request.url);
+
+		if (url.pathname === "/prerendered") {
+			return new Response(
+				`\
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,9 +16,12 @@ export default {
 	<h1>Pre-rendered HTML</h1>
 </body>
 </html>`,
-			{
-				headers: { "Content-Type": "text/html" },
-			}
-		);
+				{
+					headers: { "Content-Type": "text/html" },
+				}
+			);
+		}
+
+		return new Response(null, { status: 404 });
 	},
 } satisfies ExportedHandler;
