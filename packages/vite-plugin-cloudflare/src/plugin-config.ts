@@ -105,6 +105,7 @@ export interface AssetsOnlyResolvedConfig extends NonPreviewResolvedConfig {
 	type: "assets-only";
 	config: ResolvedAssetsOnlyConfig;
 	rawConfigs: {
+		// TODO: add warnings for `prerenderWorker`
 		entryWorker: AssetsOnlyWorkerResolvedConfig;
 	};
 }
@@ -114,6 +115,7 @@ export interface WorkersResolvedConfig extends NonPreviewResolvedConfig {
 	entryWorkerEnvironmentName: string;
 	staticRouting: StaticRouting | undefined;
 	rawConfigs: {
+		// TODO: add warnings for `prerenderWorker`
 		entryWorker: WorkerWithServerLogicResolvedConfig;
 		auxiliaryWorkers: WorkerResolvedConfig[];
 	};
@@ -271,7 +273,7 @@ export function resolvePluginConfig(
 			...shared,
 			remoteBindings: pluginConfig.remoteBindings ?? true,
 			type: "preview",
-			workers: getWorkerConfigs(root),
+			workers: getWorkerConfigs(root, !!process.env.IS_VITE_PRERENDER),
 		};
 	}
 
