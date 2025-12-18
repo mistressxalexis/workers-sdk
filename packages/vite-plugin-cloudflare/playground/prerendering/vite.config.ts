@@ -24,8 +24,6 @@ export default defineConfig({
 			buildApp: {
 				order: "post",
 				async handler(builder) {
-					process.env.IS_VITE_PRERENDER = "true";
-
 					const previewServer = await preview({
 						root: path.dirname(fileURLToPath(import.meta.url)),
 						logLevel: "silent",
@@ -55,8 +53,6 @@ export default defineConfig({
 					}
 
 					await previewServer.close();
-
-					delete process.env.IS_VITE_PRERENDER;
 
 					const prerenderOutputDirectory =
 						builder.environments.prerender?.config.build.outDir;

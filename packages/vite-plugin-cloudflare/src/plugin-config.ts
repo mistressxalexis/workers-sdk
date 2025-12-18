@@ -273,7 +273,7 @@ export function resolvePluginConfig(
 			...shared,
 			remoteBindings: pluginConfig.remoteBindings ?? true,
 			type: "preview",
-			workers: getWorkerConfigs(root, !!process.env.IS_VITE_PRERENDER),
+			workers: getWorkerConfigs(root, !!process.env.CLOUDFLARE_VITE_BUILD),
 		};
 	}
 
