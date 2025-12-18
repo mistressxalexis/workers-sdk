@@ -52,6 +52,11 @@ interface Experimental {
 	prerenderWorker?: AuxiliaryWorkerConfig;
 }
 
+type FilteredEntryWorkerConfig = Omit<
+	ResolvedAssetsOnlyConfig,
+	"topLevelName" | "name"
+>;
+
 type WorkerConfigCustomizer<TIsEntryWorker extends boolean> =
 	| Partial<WorkerConfig>
 	| ((
@@ -59,7 +64,9 @@ type WorkerConfigCustomizer<TIsEntryWorker extends boolean> =
 				? [config: WorkerConfig]
 				: [
 						config: WorkerConfig,
-						{ entryWorkerConfig: ResolvedAssetsOnlyConfig },
+						{
+							entryWorkerConfig: FilteredEntryWorkerConfig;
+						},
 					]
 	  ) => Partial<WorkerConfig> | void);
 
@@ -131,6 +138,15 @@ export type ResolvedPluginConfig =
 	| WorkersResolvedConfig
 	| PreviewResolvedConfig;
 
+function filterEntryWorkerConfig(
+	config: ResolvedAssetsOnlyConfig
+): FilteredEntryWorkerConfig {
+	// eslint-disable-next-line unused-imports/no-unused-vars
+	const { topLevelName, name, ...filteredConfig } = config;
+
+	return filteredConfig;
+}
+
 export function customizeWorkerConfig(options: {
 	workerConfig: WorkerConfig;
 	configCustomizer: WorkerConfigCustomizer<false> | undefined;
@@ -158,7 +174,9 @@ export function customizeWorkerConfig(
 		typeof options.configCustomizer === "function"
 			? "entryWorkerConfig" in options
 				? options.configCustomizer(options.workerConfig, {
-						entryWorkerConfig: options.entryWorkerConfig,
+						entryWorkerConfig: filterEntryWorkerConfig(
+							options.entryWorkerConfig
+						),
 					})
 				: options.configCustomizer(options.workerConfig)
 			: options.configCustomizer;

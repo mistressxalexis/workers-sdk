@@ -11,9 +11,12 @@ export default defineConfig({
 			persistState: false,
 			experimental: {
 				prerenderWorker: {
-					config: {
-						name: "prerender",
-						main: "./src/prerender.ts",
+					config(_, { entryWorkerConfig }) {
+						return {
+							...entryWorkerConfig,
+							name: "prerender",
+							main: "./src/prerender.ts",
+						};
 					},
 				},
 			},
