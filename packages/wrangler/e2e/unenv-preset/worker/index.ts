@@ -783,6 +783,20 @@ export const WorkerdTests: Record<string, () => void> = {
 			assertTypeOf(inspectorPromises.default, "Network", "object");
 		}
 	},
+
+	async testDgram() {
+		const dgram = await import("node:dgram");
+
+		assertTypeOfProperties(dgram, {
+			createSocket: "function",
+			Socket: "function",
+		});
+
+		assertTypeOfProperties(dgram.default, {
+			createSocket: "function",
+			Socket: "function",
+		});
+	},
 };
 
 /**
