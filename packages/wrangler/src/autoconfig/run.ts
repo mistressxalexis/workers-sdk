@@ -147,12 +147,6 @@ export async function runAutoConfig(
 			JSON.stringify(
 				{
 					...existingPackageJson,
-					dependencies: {
-						...existingPackageJson.dependencies,
-					},
-					devDependencies: {
-						...existingPackageJson.devDependencies,
-					},
 					scripts: {
 						...existingPackageJson.scripts,
 						...autoConfigSummary.scripts,
