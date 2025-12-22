@@ -660,9 +660,9 @@ function getReadlineOverrides({
 		"disable_nodejs_readline_module"
 	);
 
-	const enabledByFlag = compatibilityFlags.includes(
-		"enable_nodejs_readline_module"
-	);
+	const enabledByFlag =
+		compatibilityFlags.includes("enable_nodejs_readline_module") &&
+		compatibilityFlags.includes("experimental");
 
 	const enabled = enabledByFlag && !disabledByFlag;
 
