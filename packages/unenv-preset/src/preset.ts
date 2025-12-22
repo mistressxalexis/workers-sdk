@@ -602,7 +602,6 @@ function getVmOverrides({
 				hybridModules: [],
 			};
 }
-<<<<<<< HEAD
 
 /**
  * Returns the overrides for `node:inspector` (unenv or workerd)
@@ -639,8 +638,6 @@ function getInspectorOverrides({
 				hybridModules: [],
 			};
 }
-||||||| parent of 2f6f8ace5 (feat(unenv-preset): add support for native node:readline module)
-=======
 
 /**
  * Returns the overrides for `node:readline` and `node:readline/promises` (unenv or workerd)
@@ -677,4 +674,3 @@ function getReadlineOverrides({
 				hybridModules: [],
 			};
 }
->>>>>>> 2f6f8ace5 (feat(unenv-preset): add support for native node:readline module)
