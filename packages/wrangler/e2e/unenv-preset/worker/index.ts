@@ -752,6 +752,32 @@ export const WorkerdTests: Record<string, () => void> = {
 			Network: "object",
 		});
 	},
+
+	async testReadline() {
+		const readline = await import("node:readline");
+
+		assertTypeOfProperties(readline, {
+			Interface: "function",
+			clearLine: "function",
+			clearScreenDown: "function",
+			createInterface: "function",
+			cursorTo: "function",
+			emitKeypressEvents: "function",
+			moveCursor: "function",
+			promises: "object",
+		});
+
+		assertTypeOfProperties(readline.default, {
+			Interface: "function",
+			clearLine: "function",
+			clearScreenDown: "function",
+			createInterface: "function",
+			cursorTo: "function",
+			emitKeypressEvents: "function",
+			moveCursor: "function",
+			promises: "object",
+		});
+	},
 };
 
 /**

@@ -80,6 +80,7 @@ export function getCloudflarePreset({
 	const consoleOverrides = getConsoleOverrides(compat);
 	const vmOverrides = getVmOverrides(compat);
 	const inspectorOverrides = getInspectorOverrides(compat);
+	const readlineOverrides = getReadlineOverrides(compat);
 
 	// "dynamic" as they depend on the compatibility date and flags
 	const dynamicNativeModules = [
@@ -96,6 +97,7 @@ export function getCloudflarePreset({
 		...consoleOverrides.nativeModules,
 		...vmOverrides.nativeModules,
 		...inspectorOverrides.nativeModules,
+		...readlineOverrides.nativeModules,
 	];
 
 	// "dynamic" as they depend on the compatibility date and flags
@@ -113,6 +115,7 @@ export function getCloudflarePreset({
 		...consoleOverrides.hybridModules,
 		...vmOverrides.hybridModules,
 		...inspectorOverrides.hybridModules,
+		...readlineOverrides.hybridModules,
 	];
 
 	return {
@@ -599,6 +602,7 @@ function getVmOverrides({
 				hybridModules: [],
 			};
 }
+<<<<<<< HEAD
 
 /**
  * Returns the overrides for `node:inspector` (unenv or workerd)
@@ -635,3 +639,42 @@ function getInspectorOverrides({
 				hybridModules: [],
 			};
 }
+||||||| parent of 2f6f8ace5 (feat(unenv-preset): add support for native node:readline module)
+=======
+
+/**
+ * Returns the overrides for `node:readline` and `node:readline/promises` (unenv or workerd)
+ *
+ * The native readline implementation:
+ * - is experimental and has no default enable date
+ * - can be enabled with the "enable_nodejs_readline_module" flag
+ * - can be disabled with the "disable_nodejs_readline_module" flag
+ */
+function getReadlineOverrides({
+	compatibilityFlags,
+}: {
+	compatibilityDate: string;
+	compatibilityFlags: string[];
+}): { nativeModules: string[]; hybridModules: string[] } {
+	const disabledByFlag = compatibilityFlags.includes(
+		"disable_nodejs_readline_module"
+	);
+
+	const enabledByFlag = compatibilityFlags.includes(
+		"enable_nodejs_readline_module"
+	);
+
+	const enabled = enabledByFlag && !disabledByFlag;
+
+	// When enabled, use the native `readline` and `readline/promises` modules from workerd
+	return enabled
+		? {
+				nativeModules: ["readline", "readline/promises"],
+				hybridModules: [],
+			}
+		: {
+				nativeModules: [],
+				hybridModules: [],
+			};
+}
+>>>>>>> 2f6f8ace5 (feat(unenv-preset): add support for native node:readline module)
