@@ -640,10 +640,7 @@ function getInspectorOverrides({
 }
 
 /**
- * Returns the overrides for `node:readline` (unenv or workerd)
- *
- * Note: `node:readline/promises` is not available as a separate module in workerd,
- * but the promises API is accessible via `readline.promises`.
+ * Returns the overrides for `node:readline` and `node:readline/promises` (unenv or workerd)
  *
  * The native readline implementation:
  * - is experimental and has no default enable date
@@ -666,12 +663,10 @@ function getReadlineOverrides({
 
 	const enabled = enabledByFlag && !disabledByFlag;
 
-	// When enabled, use the native `readline` module from workerd
-	// Note: `readline/promises` is not available as a separate module in workerd,
-	// but the promises API is accessible via `readline.promises`
+	// When enabled, use the native `readline` and `readline/promises` modules from workerd
 	return enabled
 		? {
-				nativeModules: ["readline"],
+				nativeModules: ["readline", "readline/promises"],
 				hybridModules: [],
 			}
 		: {
