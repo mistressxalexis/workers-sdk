@@ -783,6 +783,64 @@ export const WorkerdTests: Record<string, () => void> = {
 			assertTypeOf(inspectorPromises.default, "Network", "object");
 		}
 	},
+
+	async testSqlite() {
+		// @ts-expect-error TS2307 - node:sqlite is experimental and may not have type declarations
+		const sqlite = await import("node:sqlite");
+
+		// Common exports (both unenv stub and native workerd)
+		assertTypeOfProperties(sqlite, {
+			DatabaseSync: "function",
+			StatementSync: "function",
+			constants: "object",
+			default: "object",
+		});
+		assertTypeOfProperties(sqlite.default, {
+			DatabaseSync: "function",
+			StatementSync: "function",
+			constants: "object",
+		});
+
+		if (getRuntimeFlagValue("enable_nodejs_sqlite_module")) {
+			// Native workerd exports `backup` function and non-empty constants
+			assertTypeOf(sqlite, "backup", "function");
+			assertTypeOf(sqlite.default, "backup", "function");
+			assert.strictEqual(
+				"SQLITE_CHANGESET_OMIT" in sqlite.constants,
+				true,
+				"constants should contain SQLITE_CHANGESET_OMIT"
+			);
+		} else {
+			// unenv stub: no backup function and empty constants
+			assertTypeOf(sqlite, "backup", "undefined");
+			assertTypeOf(sqlite.default, "backup", "undefined");
+			assert.deepStrictEqual(
+				Object.keys(sqlite.constants),
+				[],
+				"constants should be empty in unenv stub"
+			);
+		}
+	},
+
+	async testStreamWrap() {
+		if (!getRuntimeFlagValue("enable_nodejs_stream_wrap_module")) {
+			// `node:_stream_wrap` is implemented as a mock in unenv
+			return;
+		}
+
+		// @ts-expect-error TS2307 - _stream_wrap is an internal Node.js module without type declarations
+		const streamWrap = await import("node:_stream_wrap");
+
+		// The _stream_wrap module exports JSStreamSocket as the default export
+		assertTypeOf(streamWrap, "default", "function");
+
+		// Verify it's a constructor (class)
+		assert.strictEqual(
+			typeof streamWrap.default.prototype,
+			"object",
+			"JSStreamSocket should be a constructor"
+		);
+	},
 };
 
 /**
