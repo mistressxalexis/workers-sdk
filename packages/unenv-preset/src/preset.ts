@@ -80,7 +80,6 @@ export function getCloudflarePreset({
 	const consoleOverrides = getConsoleOverrides(compat);
 	const vmOverrides = getVmOverrides(compat);
 	const inspectorOverrides = getInspectorOverrides(compat);
-	const sqliteOverrides = getSqliteOverrides(compat);
 	const streamWrapOverrides = getStreamWrapOverrides(compat);
 
 	// "dynamic" as they depend on the compatibility date and flags
@@ -98,7 +97,6 @@ export function getCloudflarePreset({
 		...consoleOverrides.nativeModules,
 		...vmOverrides.nativeModules,
 		...inspectorOverrides.nativeModules,
-		...sqliteOverrides.nativeModules,
 		...streamWrapOverrides.nativeModules,
 	];
 
@@ -117,7 +115,6 @@ export function getCloudflarePreset({
 		...consoleOverrides.hybridModules,
 		...vmOverrides.hybridModules,
 		...inspectorOverrides.hybridModules,
-		...sqliteOverrides.hybridModules,
 		...streamWrapOverrides.hybridModules,
 	];
 
@@ -634,42 +631,6 @@ function getInspectorOverrides({
 	return enabled
 		? {
 				nativeModules: ["inspector/promises", "inspector"],
-				hybridModules: [],
-			}
-		: {
-				nativeModules: [],
-				hybridModules: [],
-			};
-}
-
-/**
- * Returns the overrides for `node:sqlite` (unenv or workerd)
- *
- * The native sqlite implementation:
- * - is experimental and has no default enable date
- * - can be enabled with the "enable_nodejs_sqlite_module" flag
- * - can be disabled with the "disable_nodejs_sqlite_module" flag
- */
-function getSqliteOverrides({
-	compatibilityFlags,
-}: {
-	compatibilityDate: string;
-	compatibilityFlags: string[];
-}): { nativeModules: string[]; hybridModules: string[] } {
-	const disabledByFlag = compatibilityFlags.includes(
-		"disable_nodejs_sqlite_module"
-	);
-
-	const enabledByFlag =
-		compatibilityFlags.includes("enable_nodejs_sqlite_module") &&
-		compatibilityFlags.includes("experimental");
-
-	const enabled = enabledByFlag && !disabledByFlag;
-
-	// When enabled, use the native `sqlite` module from workerd
-	return enabled
-		? {
-				nativeModules: ["sqlite"],
 				hybridModules: [],
 			}
 		: {
